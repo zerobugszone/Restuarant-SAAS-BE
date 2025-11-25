@@ -7,6 +7,7 @@ import { validationMiddleware } from '@/core/middleware/validation.middleware';
 import { CreateMenuItemDto } from '../dto/createMenuItem.dto';
 import { UpdateMenuItemDto } from '../dto/updateMenuItem.dto';
 import { CreateCategoryDto } from '../dto/createCategory.dto';
+import { UpdateCategoryDto } from '../dto/updateCategory.dto';
 
 const router = Router();
 const menuController = new MenuController();
@@ -43,7 +44,13 @@ router.get('/items', authenticationMiddleware, tenantResolver, menuController.li
  *       201:
  *         description: Created
  */
-router.post('/items', authenticationMiddleware, tenantResolver, validationMiddleware(CreateMenuItemDto), menuController.create);
+router.post(
+  '/items',
+  authenticationMiddleware,
+  tenantResolver,
+  validationMiddleware(CreateMenuItemDto),
+  menuController.create
+);
 /**
  * @openapi
  * /api/v1/menu/items/{id}:
@@ -68,7 +75,13 @@ router.post('/items', authenticationMiddleware, tenantResolver, validationMiddle
  *       200:
  *         description: Updated
  */
-router.put('/items/:id', authenticationMiddleware, tenantResolver, validationMiddleware(UpdateMenuItemDto), menuController.update);
+router.put(
+  '/items/:id',
+  authenticationMiddleware,
+  tenantResolver,
+  validationMiddleware(UpdateMenuItemDto),
+  menuController.update
+);
 
 /**
  * @openapi
@@ -101,6 +114,44 @@ router.get('/categories', authenticationMiddleware, tenantResolver, categoryCont
  *       201:
  *         description: Created
  */
-router.post('/categories', authenticationMiddleware, tenantResolver, validationMiddleware(CreateCategoryDto), categoryController.create);
+router.post(
+  '/categories',
+  authenticationMiddleware,
+  tenantResolver,
+  validationMiddleware(CreateCategoryDto),
+  categoryController.create
+);
+
+/**
+ * @openapi
+ * /api/v1/menu/categories/{id}:
+ *   put:
+ *     tags: [Menu]
+ *     security:
+ *       - bearerAuth: []
+ *     summary: Update category
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/UpdateCategoryDto'
+ *     responses:
+ *       200:
+ *         description: Updated
+ */
+router.put(
+  '/categories/:id',
+  authenticationMiddleware,
+  tenantResolver,
+  validationMiddleware(UpdateCategoryDto),
+  categoryController.update
+);
 
 export default router;

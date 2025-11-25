@@ -22,4 +22,13 @@ export class CategoryController {
       next(error);
     }
   };
+
+  update = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const updated = await this.service.updateCategory(req.tenantId!, req.params.id, req.body);
+      sendResponse(res, { success: true, data: updated });
+    } catch (error) {
+      next(error);
+    }
+  };
 }

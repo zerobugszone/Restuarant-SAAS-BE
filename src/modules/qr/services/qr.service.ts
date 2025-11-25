@@ -29,4 +29,17 @@ export class QrService {
   getById(tenantId: string, id: string) {
     return this.repository.findById(tenantId, id);
   }
+
+  updateQr(
+    tenantId: string,
+    id: string,
+    payload: Partial<{
+      tableId?: string;
+      menuSectionId?: string;
+      code?: string;
+      type?: 'table' | 'menu';
+    }>
+  ) {
+    return this.repository.update(tenantId, id, payload);
+  }
 }

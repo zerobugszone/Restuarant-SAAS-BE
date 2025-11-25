@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { QrController } from '../controllers/qr.controller';
+import { UpdateQrDto } from '../dto/updateQr.dto';
 import { authenticationMiddleware } from '@/core/middleware/authentication.middleware';
 import { tenantResolver } from '@/core/middleware/tenantResolver.middleware';
 
@@ -73,5 +74,31 @@ router.post('/menu', authenticationMiddleware, tenantResolver, controller.genera
  *         description: OK
  */
 router.get('/:id', authenticationMiddleware, tenantResolver, controller.getById);
+
+/**
+ * @openapi
+ * /api/v1/qr/{id}:
+ *   put:
+ *     tags: [QR]
+ *     security:
+ *       - bearerAuth: []
+ *     summary: Update QR code
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/UpdateQrDto'
+ *     responses:
+ *       200:
+ *         description: Updated
+ */
+router.put('/:id', authenticationMiddleware, tenantResolver, controller.update);
 
 export default router;

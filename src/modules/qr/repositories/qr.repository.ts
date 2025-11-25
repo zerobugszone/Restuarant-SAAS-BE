@@ -20,6 +20,14 @@ export class QrRepository {
   async findById(tenantId: string, id: string) {
     return bucket(tenantId).find(qr => qr.id === id);
   }
+
+  async update(tenantId: string, id: string, payload: Partial<QrModel>) {
+    const qr = await this.findById(tenantId, id);
+    if (qr) {
+      Object.assign(qr, payload);
+    }
+    return qr;
+  }
 }
 
 export const qrRepository = new QrRepository();

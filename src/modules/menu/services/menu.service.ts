@@ -1,4 +1,9 @@
-import { MenuRepository, menuRepository, CategoryRepository, categoryRepository } from '../repositories/menu.repository';
+import {
+  MenuRepository,
+  menuRepository,
+  CategoryRepository,
+  categoryRepository,
+} from '../repositories/menu.repository';
 import { CreateMenuItemDto } from '../dto/createMenuItem.dto';
 import { UpdateMenuItemDto } from '../dto/updateMenuItem.dto';
 
@@ -26,5 +31,13 @@ export class MenuService {
 
   listCategories(tenantId: string) {
     return this.categoriesRepo.findAll(tenantId);
+  }
+
+  updateCategory(
+    tenantId: string,
+    id: string,
+    payload: Partial<{ name?: string; description?: string }>
+  ) {
+    return this.categoriesRepo.update(tenantId, id, payload);
   }
 }
