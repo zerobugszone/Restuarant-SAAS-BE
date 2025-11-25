@@ -9,7 +9,9 @@ interface JwtPayload {
 
 export class JwtService {
   sign(payload: JwtPayload) {
-    return jwt.sign(payload, envConfig.jwtSecret, { expiresIn: envConfig.jwtExpiresIn });
+    return jwt.sign(payload, envConfig.jwtSecret as jwt.Secret, {
+      expiresIn: envConfig.jwtExpiresIn as jwt.SignOptions['expiresIn'],
+    });
   }
 }
 

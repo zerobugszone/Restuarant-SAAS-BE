@@ -1,6 +1,10 @@
-import { SubscriptionRepository, subscriptionRepository } from '../repositories/subscription.repository';
+import {
+  SubscriptionRepository,
+  subscriptionRepository,
+} from '../repositories/subscription.repository';
 import { CreateSubscriptionDto } from '../dto/createSubscription.dto';
 import { UpdateSubscriptionDto } from '../dto/updateSubscription.dto';
+import { SubscriptionModel } from '../models/subscription.model';
 
 export class SubscriptionService {
   constructor(private readonly repository: SubscriptionRepository = subscriptionRepository) {}
@@ -12,7 +16,7 @@ export class SubscriptionService {
       status: payload.status,
       startDate: new Date(payload.startDate),
       endDate: payload.endDate ? new Date(payload.endDate) : undefined,
-      amount: payload.amount
+      amount: payload.amount,
     });
   }
 
@@ -25,12 +29,14 @@ export class SubscriptionService {
       planType: payload.planType,
       status: payload.status,
       endDate: payload.endDate,
-      amount: payload.amount
+      amount: payload.amount,
     };
 
-    return this.repository.update(id, {
+    const updatePayload: Partial<SubscriptionModel> = {
       ...parsed,
-      endDate: payload.endDate ? new Date(payload.endDate) : undefined
-    });
+      endDate: payload.endDate ? new Date(payload.endDate) : undefined,
+      startDate: payload.startDate ? new Date(payload.startDate) : undefined,
+    };
+    return this.repository.update(id, updatePayload);
   }
 }
