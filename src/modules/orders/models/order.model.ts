@@ -4,7 +4,6 @@ export type OrderStatus = 'pending' | 'in_progress' | 'completed' | 'canceled';
 
 export interface OrderModel {
   id: string;
-  tenantId: string;
   customerName: string;
   tableNumber?: string;
   total: number;
@@ -12,4 +11,5 @@ export interface OrderModel {
   items: OrderItemModel[];
   createdAt: Date;
   updatedAt: Date;
+  tenantId: string;
 }

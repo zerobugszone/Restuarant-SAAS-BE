@@ -11,6 +11,10 @@ export class UpdateSubscriptionDto {
 
   @IsOptional()
   @IsDateString()
+  startDate?: string;
+
+  @IsOptional()
+  @IsDateString()
   endDate?: string;
 
   @IsOptional()
