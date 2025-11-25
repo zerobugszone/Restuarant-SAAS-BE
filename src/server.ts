@@ -11,7 +11,8 @@ const bootstrap = async () => {
   const { port } = envConfig;
 
   server.listen(port, () => {
-    logger.info(`Server listening on port ${port}`);
+    logger.info(`API running at http://localhost:${port}${envConfig.apiPrefix}`);
+    logger.info(`Swagger UI at http://localhost:${port}/docs`);
   });
 };
 

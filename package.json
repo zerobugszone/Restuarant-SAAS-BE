@@ -5,8 +5,9 @@
   "description": "Multi-tenant SaaS platform for restaurant ordering.",
   "main": "dist/server.js",
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only --require tsconfig-paths/register src/server.ts",
-    "build": "tsc",
+    "dev": "npm run generate:swagger && ts-node-dev --respawn --transpile-only --require tsconfig-paths/register src/server.ts",
+    "build": "npm run generate:swagger && tsc",
+    "generate:swagger": "ts-node scripts/generate-swagger-json.ts",
     "start": "NODE_ENV=production node dist/server.js",
     "lint": "ESLINT_USE_FLAT_CONFIG=false eslint 'src/**/*.{ts,tsx}'",
     "lint:fix": "ESLINT_USE_FLAT_CONFIG=false eslint 'src/**/*.{ts,tsx}' --fix",
