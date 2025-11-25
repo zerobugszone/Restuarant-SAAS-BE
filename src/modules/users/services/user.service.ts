@@ -2,20 +2,20 @@ import { UserRepository } from '../repositories/user.repository';
 import bcrypt from 'bcryptjs';
 
 export const UserService = {
-  async register(data: any) {
+  register: async (tenantId: string, data: any) => {
     const passwordHash = await bcrypt.hash(data.password, 10);
-    return UserRepository.create({ ...data, passwordHash });
+    return UserRepository.create(tenantId, { ...data, passwordHash });
   },
-  async login(email: string, password: string) {
-    const [user] = await UserRepository.findByEmail(email);
+  login: async (tenantId: string, email: string, password: string) => {
+    const [user] = await UserRepository.findByEmail(tenantId, email);
     if (!user) return null;
     const valid = await bcrypt.compare(password, user.passwordHash);
     return valid ? user : null;
   },
-  async update(id: string, data: any) {
-    return UserRepository.update(id, data);
+  update: async (tenantId: string, id: string, data: any) => {
+    return UserRepository.update(tenantId, id, data);
   },
-  async delete(id: string) {
-    return UserRepository.delete(id);
+  delete: async (tenantId: string, id: string) => {
+    return UserRepository.delete(tenantId, id);
   },
 };

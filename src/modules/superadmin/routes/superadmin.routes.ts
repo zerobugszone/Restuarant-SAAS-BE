@@ -19,6 +19,7 @@ const router = Router();
  *               - email
  *               - password
  *               - name
+ *               - role
  *             properties:
  *               email:
  *                 type: string
@@ -28,6 +29,9 @@ const router = Router();
  *                 minLength: 6
  *               name:
  *                 type: string
+ *               role:
+ *                 type: string
+ *                 description: SuperAdmin role (e.g., owner, manager)
  *     responses:
  *       201:
  *         description: SuperAdmin registered
