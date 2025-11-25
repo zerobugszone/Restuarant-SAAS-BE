@@ -16,6 +16,11 @@ import menuRoutes from '@/modules/menu/routes/menu.routes';
 import customerRoutes from '@/modules/customers/routes/customer.routes';
 import paymentRoutes from '@/modules/payments/routes/payment.routes';
 import restaurantRoutes from '@/modules/restaurant/routes/restaurant.routes';
+import userRoutes from '@/modules/users/routes/user.routes';
+import userRolesRoutes from '@/modules/users/routes/userRoles.routes';
+import rolesRoutes from '@/modules/roles/routes/roles.routes';
+import rolePermissionsRoutes from '@/modules/roles/routes/rolePermissions.routes';
+import permissionsRoutes from '@/modules/permissions/routes/permissions.routes';
 
 export const createApp = () => {
   const app = express();
@@ -36,6 +41,11 @@ export const createApp = () => {
   app.use(`${apiPrefix}/customers`, customerRoutes);
   app.use(`${apiPrefix}/payments`, paymentRoutes);
   app.use(`${apiPrefix}/restaurant`, restaurantRoutes);
+  app.use(`${apiPrefix}/users`, userRoutes);
+  app.use(`${apiPrefix}/user-roles`, userRolesRoutes);
+  app.use(`${apiPrefix}/roles`, rolesRoutes);
+  app.use(`${apiPrefix}/role-permissions`, rolePermissionsRoutes);
+  app.use(`${apiPrefix}/permissions`, permissionsRoutes);
 
   app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
