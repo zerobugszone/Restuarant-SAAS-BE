@@ -1,15 +1,25 @@
 import { superadmins } from '@/core/database/schemas/master/superadmin.schema';
 import { masterDb } from '@/core/database/masterConnection';
 import { eq } from 'drizzle-orm';
+import { paginatedData } from '@/core/helper/pagination_helper';
 
 export const SuperAdminRepository = {
   async findByEmail(email: string) {
-    return masterDb.select().from(superadmins).where(eq(superadmins.email, email)).limit(1);
+    return await masterDb.select().from(superadmins).where(eq(superadmins.email, email)).limit(1);
   },
   async create(data: any) {
-    return masterDb.insert(superadmins).values(data).returning();
+    return await masterDb.insert(superadmins).values(data).returning();
   },
   async findById(id: string) {
-    return masterDb.select().from(superadmins).where(eq(superadmins.id, id)).limit(1);
+    return await masterDb.select().from(superadmins).where(eq(superadmins.id, id)).limit(1);
+  },
+
+  async findAll(
+    matchData: Record<string, any>,
+    sortData: Record<string, 'asc' | 'desc'>,
+    page: number,
+    perPage: number
+  ) {
+    return await paginatedData(masterDb, superadmins, matchData, sortData, page, perPage);
   },
 };

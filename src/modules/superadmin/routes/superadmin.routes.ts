@@ -1,5 +1,14 @@
 import { Router } from 'express';
-import { registerSuperAdmin, loginSuperAdmin } from '../controllers/superadmin.controller';
+import {
+  registerSuperAdmin,
+  loginSuperAdmin,
+  getAllSuperAdmins,
+} from '../controllers/superadmin.controller';
+import {
+  createSuperadminSchema,
+  loginSuperAdminValidator,
+} from '../validator/superadmin.validator';
+import { validateSchema } from '@/core/helper/validation_helper';
 
 const router = Router();
 
@@ -36,7 +45,7 @@ const router = Router();
  *       201:
  *         description: SuperAdmin registered
  */
-router.post('/register', registerSuperAdmin);
+router.post('/register', validateSchema(createSuperadminSchema), registerSuperAdmin);
 
 /**
  * @openapi
@@ -66,6 +75,8 @@ router.post('/register', registerSuperAdmin);
  *       401:
  *         description: Invalid credentials
  */
-router.post('/login', loginSuperAdmin);
+router.post('/login', validateSchema(loginSuperAdminValidator), loginSuperAdmin);
+
+router.get('/', getAllSuperAdmins);
 
 export default router;
