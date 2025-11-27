@@ -21,6 +21,7 @@ import userRolesRoutes from '@/modules/users/routes/userRoles.routes';
 import rolesRoutes from '@/modules/roles/routes/roles.routes';
 import rolePermissionsRoutes from '@/modules/roles/routes/rolePermissions.routes';
 import permissionsRoutes from '@/modules/permissions/routes/permissions.routes';
+import superadminRoutes from '@/modules/superadmin/routes/superadmin.routes';
 
 export const createApp = () => {
   const app = express();
@@ -35,6 +36,7 @@ export const createApp = () => {
 
   app.use(`${apiPrefix}/admin/tenants`, tenantRoutes);
   app.use(`${apiPrefix}/admin/subscriptions`, subscriptionRoutes);
+  app.use(`${apiPrefix}/superadmin`, superadminRoutes);
   app.use(`${apiPrefix}/auth`, authRoutes);
   app.use(`${apiPrefix}/orders`, orderRoutes);
   app.use(`${apiPrefix}/menu`, menuRoutes);
