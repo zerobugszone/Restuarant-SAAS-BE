@@ -19,11 +19,14 @@
     "test:e2e": "jest --config jest.e2e.config.js",
     "test:coverage": "jest --coverage",
     "generate:master": "DRIZZLE_CONFIG_PATH=drizzle.config.ts drizzle-kit generate",
-    "migrate:master": "DRIZZLE_CONFIG_PATH=drizzle.config.ts drizzle-kit migrate",
-    "migrate:tenant": "ts-node scripts/migrateTenant.ts",
+    "generate:tenant": "DRIZZLE_CONFIG_PATH=drizzle.tenant.config.ts drizzle-kit generate",
+    "migrate:master": "ts-node scripts/migrate-master.ts",
+    "migrate:tenant": "ts-node scripts/migrate-tenant.ts",
+    "migrate:all-tenants": "ts-node scripts/migrate-all-tenants.ts",
+    "db:setup": "ts-node scripts/db-setup.ts",
+    "db:reset": "ts-node scripts/db-reset.ts",
     "seed:master": "ts-node scripts/seedMaster.ts",
-    "tenant:create": "ts-node scripts/createTenant.ts",
-    "tenant:migrate": "ts-node scripts/migrateSingleTenant.ts"
+    "tenant:create": "ts-node scripts/createTenant.ts"
   },
   "keywords": [
     "restaurant",

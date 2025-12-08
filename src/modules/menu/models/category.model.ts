@@ -1,6 +1,11 @@
 export interface CategoryModel {
   id: string;
+  menuId: string;
   name: string;
   description?: string;
-  tenantId: string;
+  displayOrder?: number;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }
+
