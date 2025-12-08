@@ -8,9 +8,13 @@ export interface TenantDatabaseConfig {
 
 export interface Tenant {
   id: string;
+  tenantId: string;
   name: string;
   subdomain: string;
-  status: 'active' | 'inactive' | 'suspended';
-  database: TenantDatabaseConfig;
+  databaseName: string;
+  databaseHost: string;
+  databasePort: number;
+  status: string;
   settings?: Record<string, unknown>;
 }
+
