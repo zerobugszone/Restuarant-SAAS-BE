@@ -1,38 +1,42 @@
 import { TenantModel } from '../models/tenant.model';
-import { v4 as uuid } from 'uuid';
+import { tenants } from '@/core/database/schemas/master/tenants.schema';
+import { eq } from 'drizzle-orm';
+import { paginatedData } from '@/core/helper/pagination_helper';
+import { masterDb } from '@/core/database/masterConnection';
+import { randomUUID } from 'crypto';
+import { ensureTenantDatabaseExists, runTenantMigrations } from '@/core/database/ensureDatabase';
 
-const tenants: TenantModel[] = [];
-
-export class TenantRepository {
+class TenantRepository {
   async create(payload: Partial<TenantModel>): Promise<TenantModel> {
-    const tenant: TenantModel = {
-      id: uuid(),
-      name: payload.name ?? 'Unnamed Tenant',
-      subdomain: payload.subdomain ?? 'example',
-      status: (payload.status as TenantModel['status']) ?? 'active',
-      plan: payload.plan ?? 'basic',
-      createdAt: new Date()
+    const tenantId = randomUUID();
+    const newTenant = {
+      name: payload.name || '',
+      subdomain: payload.subdomain || '',
+      databaseName: payload.databaseName || '',
+      databaseHost: payload.databaseHost || '',
+      databasePort: payload.databasePort || 5432,
+      status: payload.status || 'active',
+      tenantId: tenantId,
+      settings: payload.settings || null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     };
-
-    tenants.push(tenant);
-    return tenant;
+    const [createdTenant] = await masterDb.insert(tenants).values(newTenant).returning();
+    await this.createDatabase(newTenant.databaseName, tenantId);
+    return createdTenant as TenantModel;
   }
 
-  async findAll(): Promise<TenantModel[]> {
-    return tenants;
-  }
-
-  async findById(id: string): Promise<TenantModel | undefined> {
-    return tenants.find(tenant => tenant.id === id);
-  }
-
-  async update(id: string, payload: Partial<TenantModel>): Promise<TenantModel | undefined> {
-    const tenant = await this.findById(id);
-    if (tenant) {
-      Object.assign(tenant, payload);
+  private async createDatabase(databaseName: string, tenantId: string): Promise<void> {
+    if (!databaseName) {
+      throw new Error('Database name is required to create a database.');
     }
-    return tenant;
+
+    const sanitizedName = databaseName.replace(/[^a-zA-Z0-9_]/g, '_');
+
+    // Use ensureTenantDatabaseExists which checks if database exists before creating
+    await ensureTenantDatabaseExists(tenantId, sanitizedName);
+    await runTenantMigrations(sanitizedName);
   }
 }
 
-export const tenantRepository = new TenantRepository();
+export default new TenantRepository();

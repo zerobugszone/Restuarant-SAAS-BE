@@ -1,7 +1,8 @@
-import { pgTable, varchar, boolean, timestamp } from 'drizzle-orm/pg-core';
+import { pgTable, varchar, uuid, boolean, timestamp } from 'drizzle-orm/pg-core';
 
 export const usersSchema = pgTable('users', {
-  id: varchar('id', { length: 36 }).primaryKey(),
+  id: uuid('id').defaultRandom().primaryKey(),
+  tenantId: uuid('tenant_id').notNull().unique(),
   email: varchar('email', { length: 255 }).notNull(),
   passwordHash: varchar('password_hash', { length: 255 }).notNull(),
   role: varchar('role', { length: 50 }).notNull(),

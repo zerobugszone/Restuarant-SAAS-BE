@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { TenantController } from '../controllers/tenant.controller';
+import tenantController from '../controllers/tenant.controller';
 import { authenticationMiddleware } from '@/core/middleware/authentication.middleware';
 import { authorize } from '@/core/middleware/authorization.middleware';
 import { validationMiddleware } from '@/core/middleware/validation.middleware';
@@ -7,7 +7,6 @@ import { CreateTenantDto } from '../dto/createTenant.dto';
 import { UpdateTenantDto } from '../dto/updateTenant.dto';
 
 const router = Router();
-const controller = new TenantController();
 
 /**
  * @openapi
@@ -27,7 +26,7 @@ const controller = new TenantController();
  *       201:
  *         description: Tenant created
  */
-router.post('/', authenticationMiddleware, authorize(['admin']), validationMiddleware(CreateTenantDto), controller.create);
+router.post('/', authenticationMiddleware, authorize(['admin']), tenantController.create);
 
 /**
  * @openapi
@@ -41,7 +40,7 @@ router.post('/', authenticationMiddleware, authorize(['admin']), validationMiddl
  *       200:
  *         description: OK
  */
-router.get('/', authenticationMiddleware, authorize(['admin']), controller.list);
+// router.get('/', authenticationMiddleware, authorize(['admin']), controller.list);
 
 /**
  * @openapi
@@ -67,6 +66,6 @@ router.get('/', authenticationMiddleware, authorize(['admin']), controller.list)
  *       200:
  *         description: Updated
  */
-router.put('/:id', authenticationMiddleware, authorize(['admin']), validationMiddleware(UpdateTenantDto), controller.update);
+// router.put('/:id', authenticationMiddleware, authorize(['admin']), validationMiddleware(UpdateTenantDto), controller.update);
 
 export default router;

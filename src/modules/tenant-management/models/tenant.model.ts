@@ -1,8 +1,11 @@
 export interface TenantModel {
-  id: string;
   name: string;
   subdomain: string;
-  status: 'active' | 'inactive' | 'suspended';
-  plan: string;
+  databaseName: string;
+  databaseHost: string;
+  databasePort: number;
+  status: 'active' | 'suspended';
+  settings?: Record<string, unknown> | null;
   createdAt: Date;
+  updatedAt: Date;
 }
