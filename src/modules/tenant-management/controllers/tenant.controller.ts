@@ -15,6 +15,15 @@ class TenantController {
       next(error);
     }
   }
+
+  async getAllTenants(req: Request, res: Response, next: NextFunction) {
+    try {
+      const tenants = await teantService.getAllTenants();
+      sendResponse(res, { success: true, data: tenants }, 200);
+    } catch (error: any) {
+      next(error);
+    }
+  }
 }
 
 export default new TenantController();

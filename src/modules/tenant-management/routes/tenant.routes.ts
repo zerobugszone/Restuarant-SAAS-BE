@@ -8,6 +8,8 @@ import { UpdateTenantDto } from '../dto/updateTenant.dto';
 
 const router = Router();
 
+router.get('/', tenantController.getAllTenants);
+
 /**
  * @openapi
  * /api/v1/admin/tenants:

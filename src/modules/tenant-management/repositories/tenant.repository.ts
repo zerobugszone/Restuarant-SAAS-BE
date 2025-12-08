@@ -4,7 +4,7 @@ import { eq } from 'drizzle-orm';
 import { paginatedData } from '@/core/helper/pagination_helper';
 import { masterDb } from '@/core/database/masterConnection';
 import { randomUUID } from 'crypto';
-import { ensureTenantDatabaseExists, runTenantMigrations } from '@/core/database/ensureDatabase';
+import { ensureTenantDatabaseExists } from '@/core/database/ensureDatabase';
 
 class TenantRepository {
   async create(payload: Partial<TenantModel>): Promise<TenantModel> {
@@ -30,12 +30,13 @@ class TenantRepository {
     if (!databaseName) {
       throw new Error('Database name is required to create a database.');
     }
-
     const sanitizedName = databaseName.replace(/[^a-zA-Z0-9_]/g, '_');
-
-    // Use ensureTenantDatabaseExists which checks if database exists before creating
     await ensureTenantDatabaseExists(tenantId, sanitizedName);
-    await runTenantMigrations(sanitizedName);
+  }
+
+  async getAllTenants(): Promise<TenantModel[]> {
+    const result = await masterDb.select().from(tenants);
+    return result as TenantModel[];
   }
 }
 

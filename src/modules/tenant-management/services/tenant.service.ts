@@ -6,6 +6,10 @@ class TenantService {
   async create(payload: CreateTenantDto) {
     return await tenantRepository.create(payload);
   }
+
+  async getAllTenants() {
+    return await tenantRepository.getAllTenants();
+  }
 }
 
 export default new TenantService();
