@@ -3,10 +3,7 @@ import { drizzle, NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { tenantDbDefaults } from '@/core/config/database.config';
 import { TenantDatabaseConfig } from '@/core/types/tenant.types';
 import { logger } from '@/core/utils/logger.util';
-import {
-  ensureMasterDatabaseExists,
-  ensureTenantDatabaseExists,
-} from '@/core/database/ensureDatabase';
+import { ensureMasterDatabaseExists } from '@/core/database/ensureDatabase';
 
 type TenantPoolEntry = {
   pool: Pool;
@@ -40,8 +37,7 @@ class TenantConnectionPool {
       };
 
       // TODO: Implement ensureTenantDatabaseExists if tenant DB creation is needed
-      // await ensureMasterDatabaseExists();
-      await ensureTenantDatabaseExists(tenantId, config.database);
+      await ensureMasterDatabaseExists();
 
       const pool = new Pool(config);
       pool.on('error', error => {
