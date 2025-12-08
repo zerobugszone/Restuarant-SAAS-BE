@@ -1,14 +1,13 @@
 import { Router } from 'express';
-import {
-  registerSuperAdmin,
-  loginSuperAdmin,
-  getAllSuperAdmins,
-} from '../controllers/superadmin.controller';
+import superAdminController from '../controllers/superadmin.controller';
 import {
   createSuperadminSchema,
   loginSuperAdminValidator,
+  changePasswordValidator,
+  refreshTokenValidator,
 } from '../validator/superadmin.validator';
 import { validateSchema } from '@/core/helper/validation_helper';
+import { authenticationMiddleware } from '@/core/middleware/authentication.middleware';
 
 const router = Router();
 
@@ -45,7 +44,7 @@ const router = Router();
  *       201:
  *         description: SuperAdmin registered
  */
-router.post('/register', validateSchema(createSuperadminSchema), registerSuperAdmin);
+router.post('/register', validateSchema(createSuperadminSchema), superAdminController.register);
 
 /**
  * @openapi
@@ -75,8 +74,107 @@ router.post('/register', validateSchema(createSuperadminSchema), registerSuperAd
  *       401:
  *         description: Invalid credentials
  */
-router.post('/login', validateSchema(loginSuperAdminValidator), loginSuperAdmin);
+router.post('/login', validateSchema(loginSuperAdminValidator), superAdminController.login);
 
-router.get('/', getAllSuperAdmins);
+/**
+ * @openapi
+ * /api/v1/superadmin:
+ *   get:
+ *     tags: [SuperAdmin]
+ *     summary: Get all SuperAdmins
+ *     responses:
+ *       200:
+ *         description: List of all SuperAdmins
+ */
+
+router.get('/', superAdminController.getAll);
+
+/**
+ * @openapi
+ * /api/v1/superadmin/refresh-token:
+ *   post:
+ *     tags: [SuperAdmin]
+ *     summary: Refresh access token using a valid refresh token
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - refreshToken
+ *             properties:
+ *               refreshToken:
+ *                 type: string
+ *                 description: Valid refresh token
+ *     responses:
+ *       200:
+ *         description: New access token generated
+ *       400:
+ *         description: Invalid or expired refresh token
+ */
+
+router.post(
+  '/refresh-token',
+  authenticationMiddleware,
+  validateSchema(refreshTokenValidator),
+  superAdminController.refreshAccessToken
+);
+
+/**
+ * @openapi
+ * /api/v1/superadmin/change-password:
+ *   post:
+ *     tags: [SuperAdmin]
+ *     summary: Change password for logged-in SuperAdmin
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - oldPassword
+ *               - newPassword
+ *             properties:
+ *               oldPassword:
+ *                 type: string
+ *               newPassword:
+ *                 type: string
+ *                 minLength: 6
+ *     responses:
+ *       200:
+ *         description: Password successfully changed
+ *       400:
+ *         description: Invalid old password
+ */
+
+router.post(
+  '/change-password',
+  validateSchema(changePasswordValidator),
+  superAdminController.changePassword
+);
+
+/**
+ * @openapi
+ * /api/v1/superadmin/{id}:
+ *   get:
+ *     tags: [SuperAdmin]
+ *     summary: Get SuperAdmin by ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: SuperAdmin ID
+ *     responses:
+ *       200:
+ *         description: SuperAdmin data retrieved
+ *       404:
+ *         description: SuperAdmin not found
+ */
+
+router.get('/:id', superAdminController.getById);
 
 export default router;

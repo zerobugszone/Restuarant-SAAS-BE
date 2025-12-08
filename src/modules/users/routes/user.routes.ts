@@ -1,11 +1,9 @@
 import { Router } from 'express';
-import { register, login, forgetPassword, changePassword } from '../controllers/user.controller';
+import userServices from '../controllers/user.controller';
+import { tenantResolver } from '@/core/middleware/tenantResolver.middleware';
 
 const router = Router();
 
-router.post('/register', register);
-router.post('/login', login);
-router.post('/forget-password', forgetPassword);
-router.post('/change-password', changePassword);
+router.post('/register', tenantResolver, userServices.registerUser);
 
 export default router;

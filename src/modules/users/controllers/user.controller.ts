@@ -1,24 +1,29 @@
-import { Request, Response } from 'express';
-import { UserService } from '../services/user.service';
+import { Request, Response, NextFunction } from 'express';
+import userServices from '../services/user.service';
+import { sendResponse } from '@/core/utils/response.util';
+import { getMatchAndSortData } from '@/core/helper/pagination_helper';
 import { OTPService } from '../services/otp.service';
 
-export const register = async (req: Request, res: Response) => {
-  const { tenantId, ...data } = req.body;
-  const user = await UserService.register(tenantId, data);
-  res.status(201).json(user);
-};
+class UserController {
+  public async registerUser(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userData = {
+        ...req.body,
+        tenantId: req.tenantId!,
+      };
 
-export const login = async (req: Request, res: Response) => {
-  const { tenantId, email, password } = req.body;
-  const user = await UserService.login(tenantId, email, password);
-  if (!user) return res.status(401).json({ message: 'Invalid credentials' });
-  res.json(user);
-};
+      console.log(req.tenantId);
 
-export const forgetPassword = async (req: Request, res: Response) => {
-  // Generate OTP, send to user
-};
+      const user = await userServices.registerUser(userData);
+      sendResponse(
+        res,
+        { success: true, message: 'User registration successful', data: user },
+        201
+      );
+    } catch (error: any) {
+      next(error);
+    }
+  }
+}
 
-export const changePassword = async (req: Request, res: Response) => {
-  // Verify OTP, change password
-};
+export default new UserController();

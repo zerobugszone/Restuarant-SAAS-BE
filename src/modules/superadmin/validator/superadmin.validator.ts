@@ -104,3 +104,63 @@ export const loginSuperAdminValidator = [
     .withMessage('Invalid email address'),
   body('password').notEmpty().withMessage('Password is required'),
 ];
+
+export const refreshTokenValidator = [
+  body('refreshToken').notEmpty().withMessage('Refresh token is required'),
+];
+
+export const changePasswordValidator = [
+  body('currentPassword')
+    .notEmpty()
+    .withMessage('Current password is required')
+    .bail()
+    .isString()
+    .withMessage('Current password must be a string')
+    .bail()
+    .custom(value => {
+      const regex = emojiRegex();
+      if (regex.test(value)) {
+        throw new Error('Password cannot contain emoji characters');
+      }
+      return true;
+    }),
+
+  body('newPassword')
+    .notEmpty()
+    .withMessage('New password is required')
+    .bail()
+    .isLength({ min: 6 })
+    .withMessage('Password must be at least 6 characters long')
+    .bail()
+    .matches(/[A-Z]/)
+    .withMessage('Password must contain at least one uppercase letter')
+    .bail()
+    .matches(/[!@#$%^&*(),.?":{}|<>]/)
+    .withMessage('Password must contain at least one symbol')
+    .bail()
+    .custom(value => {
+      const regex = emojiRegex();
+      if (regex.test(value)) {
+        throw new Error('Password cannot contain emoji characters');
+      }
+      return true;
+    }),
+  body('confirmPassword')
+    .notEmpty()
+    .withMessage('Confirm password is required')
+    .bail()
+    .custom((value, { req }) => {
+      if (value !== req.body.newPassword) {
+        throw new Error('Passwords and Confirmpassword do not match');
+      }
+      return true;
+    })
+    .bail()
+    .custom(value => {
+      const regex = emojiRegex();
+      if (regex.test(value)) {
+        throw new Error('Password cannot contain emoji characters');
+      }
+      return true;
+    }),
+];

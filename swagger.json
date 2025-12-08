@@ -1732,6 +1732,120 @@
         }
       }
     },
+    "/api/v1/superadmin": {
+      "get": {
+        "tags": [
+          "SuperAdmin"
+        ],
+        "summary": "Get all SuperAdmins",
+        "responses": {
+          "200": {
+            "description": "List of all SuperAdmins"
+          }
+        }
+      }
+    },
+    "/api/v1/superadmin/refresh-token": {
+      "post": {
+        "tags": [
+          "SuperAdmin"
+        ],
+        "summary": "Refresh access token using a valid refresh token",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "refreshToken"
+                ],
+                "properties": {
+                  "refreshToken": {
+                    "type": "string",
+                    "description": "Valid refresh token"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "New access token generated"
+          },
+          "400": {
+            "description": "Invalid or expired refresh token"
+          }
+        }
+      }
+    },
+    "/api/v1/superadmin/change-password": {
+      "post": {
+        "tags": [
+          "SuperAdmin"
+        ],
+        "summary": "Change password for logged-in SuperAdmin",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "oldPassword",
+                  "newPassword"
+                ],
+                "properties": {
+                  "oldPassword": {
+                    "type": "string"
+                  },
+                  "newPassword": {
+                    "type": "string",
+                    "minLength": 6
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password successfully changed"
+          },
+          "400": {
+            "description": "Invalid old password"
+          }
+        }
+      }
+    },
+    "/api/v1/superadmin/{id}": {
+      "get": {
+        "tags": [
+          "SuperAdmin"
+        ],
+        "summary": "Get SuperAdmin by ID",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "SuperAdmin ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "SuperAdmin data retrieved"
+          },
+          "404": {
+            "description": "SuperAdmin not found"
+          }
+        }
+      }
+    },
     "/api/v1/admin/tenants": {
       "post": {
         "tags": [

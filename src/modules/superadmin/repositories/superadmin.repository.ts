@@ -22,4 +22,18 @@ export const SuperAdminRepository = {
   ) {
     return await paginatedData(masterDb, superadmins, matchData, sortData, page, perPage);
   },
+
+  async updatePassword(adminId: string, hashedPassword: string) {
+    return await masterDb
+      .update(superadmins)
+      .set({
+        password: hashedPassword,
+        updatedAt: new Date(),
+      })
+      .where(eq(superadmins.id, adminId));
+  },
+
+  async deleteById(adminId: string) {
+    return await masterDb.delete(superadmins).where(eq(superadmins.id, adminId));
+  },
 };
