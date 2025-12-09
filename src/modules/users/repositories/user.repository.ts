@@ -1,5 +1,5 @@
 import { tenantConnectionPool } from '@/core/database/tenantConnectionPool';
-import { usersSchema } from '@/core/database/schemas/tenant/users.schema';
+import { usersSchema } from '@/core/database/schemas/tenant/auth.schema';
 import { User } from '../models/user.model';
 import { eq } from 'drizzle-orm';
 

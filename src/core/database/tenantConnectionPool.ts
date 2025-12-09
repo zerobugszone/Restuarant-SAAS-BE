@@ -1,10 +1,9 @@
 import { Pool } from 'pg';
 import { drizzle, NodePgDatabase } from 'drizzle-orm/node-postgres';
-import { tenantDbDefaults } from '@/core/config/database.config';
 import { TenantDatabaseConfig } from '@/core/types/tenant.types';
 import { logger } from '@/core/utils/logger.util';
 import { masterDb } from '@/core/database/masterConnection';
-import { tenants } from '@/core/database/schemas/master/tenants.schema';
+import { tenants } from '@/core/database/schemas/master/index';
 import { eq } from 'drizzle-orm';
 
 type TenantPoolEntry = {
@@ -15,7 +14,7 @@ type TenantPoolEntry = {
 
 /**
  * Tenant Connection Pool
- * 
+ *
  * Manages database connections for each tenant.
  * Automatically fetches tenant database configuration from master DB.
  */
@@ -56,7 +55,6 @@ class TenantConnectionPool {
 
     let config: TenantDatabaseConfig;
 
-    // If config not provided, fetch from master DB
     if (!dbConfig) {
       const [tenant] = await masterDb
         .select()
@@ -69,24 +67,19 @@ class TenantConnectionPool {
       }
 
       config = {
-        host: tenant.databaseHost || tenantDbDefaults.host,
-        port: tenant.databasePort || tenantDbDefaults.port,
-        database: tenant.databaseName,
-        user: tenantDbDefaults.user,
-        password: tenantDbDefaults.password,
+        databaseUrl: tenant.databaseUrl,
       };
 
       logger.info(`Creating connection pool for tenant: ${tenant.name} (${tenantId})`);
-      logger.debug(`Database: ${config.database} at ${config.host}:${config.port}`);
     } else {
       config = dbConfig;
     }
 
     // Create new pool
-    const pool = new Pool(config);
+    const pool = new Pool({ connectionString: config.databaseUrl });
 
     // Handle pool errors
-    pool.on('error', (error) => {
+    pool.on('error', error => {
       logger.error(`Tenant pool error for ${tenantId}:`, error);
       this.pools.delete(tenantId);
     });
@@ -95,9 +88,9 @@ class TenantConnectionPool {
     try {
       const client = await pool.connect();
       client.release();
-      logger.info(`✓ Successfully connected to tenant database: ${config.database}`);
+      logger.info(`✓ Successfully connected to tenant database: ${tenantId}`);
     } catch (error) {
-      logger.error(`Failed to connect to tenant database ${config.database}:`, error);
+      logger.error(`Failed to connect to tenant database ${tenantId}:`, error);
       await pool.end();
       throw new Error(`Failed to connect to tenant database: ${error}`);
     }
@@ -149,4 +142,3 @@ class TenantConnectionPool {
 }
 
 export const tenantConnectionPool = new TenantConnectionPool();
-

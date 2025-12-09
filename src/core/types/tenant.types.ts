@@ -1,9 +1,5 @@
 export interface TenantDatabaseConfig {
-  host: string;
-  port: number;
-  database: string;
-  user: string;
-  password: string;
+  databaseUrl: string;
 }
 
 export interface Tenant {
@@ -17,4 +13,3 @@ export interface Tenant {
   status: string;
   settings?: Record<string, unknown>;
 }
-

@@ -1,7 +1,7 @@
 import { body } from 'express-validator';
 import { forbidExtraFields } from '@/core/helper/validation_helper';
 import emojiRegex from 'emoji-regex';
-import { superadmins } from '@/core/database/schemas/master/superadmin.schema';
+import { superadmins } from '@/core/database/schemas/master/auth.schema';
 import { masterDb } from '@/core/database/masterConnection';
 import { eq } from 'drizzle-orm';
 
