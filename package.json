@@ -20,13 +20,13 @@
     "test:coverage": "jest --coverage",
     "generate:master": "DRIZZLE_CONFIG_PATH=drizzle.config.ts drizzle-kit generate",
     "generate:tenant": "DRIZZLE_CONFIG_PATH=drizzle.tenant.config.ts drizzle-kit generate",
-    "migrate:master": "ts-node scripts/migrate-master.ts",
-    "migrate:tenant": "ts-node scripts/migrate-tenant.ts",
-    "migrate:all-tenants": "ts-node scripts/migrate-all-tenants.ts",
-    "db:setup": "ts-node scripts/db-setup.ts",
-    "db:reset": "ts-node scripts/db-reset.ts",
-    "seed:master": "ts-node scripts/seedMaster.ts",
-    "tenant:create": "ts-node scripts/createTenant.ts"
+      "migrate:master": "ts-node -r tsconfig-paths/register scripts/migrate-master.ts",
+      "migrate:tenant": "ts-node -r tsconfig-paths/register scripts/migrate-tenant.ts",
+      "migrate:all-tenants": "ts-node -r tsconfig-paths/register scripts/migrate-all-tenants.ts",
+      "db:setup": "ts-node -r tsconfig-paths/register scripts/db-setup.ts",
+      "db:reset": "ts-node -r tsconfig-paths/register scripts/db-reset.ts",
+      "seed:master": "ts-node -r tsconfig-paths/register scripts/seedMaster.ts",
+      "tenant:create": "ts-node -r tsconfig-paths/register scripts/createTenant.ts"
   },
   "keywords": [
     "restaurant",

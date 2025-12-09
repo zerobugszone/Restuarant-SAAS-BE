@@ -15,6 +15,13 @@
       "when": 1764057813514,
       "tag": "0001_ancient_ezekiel",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1765250425601,
+      "tag": "0002_busy_proudstar",
+      "breakpoints": true
     }
   ]
 }
