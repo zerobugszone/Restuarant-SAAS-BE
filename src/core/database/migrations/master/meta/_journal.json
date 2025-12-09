@@ -29,6 +29,13 @@
       "when": 1765252542158,
       "tag": "0003_married_phalanx",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1765259796180,
+      "tag": "0004_refactor_schema_design",
+      "breakpoints": true
     }
   ]
 }
