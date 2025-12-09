@@ -5,29 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1765171457555,
-      "tag": "0000_true_anthem",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1765260249624,
-      "tag": "0001_refactor-schema-design",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1765261015892,
-      "tag": "0002_refactor-user-refrential-schema",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1765261161786,
-      "tag": "0003_refactor-user-refrential-schema-redesign",
+      "when": 1765261685309,
+      "tag": "0000_initial-schema-design",
       "breakpoints": true
     }
   ]

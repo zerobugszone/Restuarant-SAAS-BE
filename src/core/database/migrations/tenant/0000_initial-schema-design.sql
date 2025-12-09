@@ -9,7 +9,7 @@ CREATE SCHEMA "order";
 CREATE SCHEMA "menu";
 --> statement-breakpoint
 CREATE TABLE "auth"."otp" (
-	"id" varchar(36) PRIMARY KEY NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"user_id" uuid NOT NULL,
 	"code" varchar(10) NOT NULL,
 	"expires_at" timestamp NOT NULL,
@@ -17,27 +17,27 @@ CREATE TABLE "auth"."otp" (
 );
 --> statement-breakpoint
 CREATE TABLE "auth"."permissions" (
-	"id" varchar(36) PRIMARY KEY NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"name" varchar(50) NOT NULL,
 	"description" text
 );
 --> statement-breakpoint
 CREATE TABLE "auth"."role_permissions" (
-	"id" varchar(36) PRIMARY KEY NOT NULL,
-	"role_id" varchar(36) NOT NULL,
-	"permission_id" varchar(36) NOT NULL
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"role_id" uuid NOT NULL,
+	"permission_id" uuid NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "auth"."roles" (
-	"id" varchar(36) PRIMARY KEY NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"name" varchar(50) NOT NULL,
 	"description" text
 );
 --> statement-breakpoint
 CREATE TABLE "auth"."user_roles" (
-	"id" varchar(36) PRIMARY KEY NOT NULL,
-	"user_id" varchar(36) NOT NULL,
-	"role_id" varchar(36) NOT NULL
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"user_id" uuid NOT NULL,
+	"role_id" uuid NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "auth"."users" (
@@ -218,21 +218,12 @@ CREATE TABLE "menu"."menus" (
 	"updated_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-DROP TABLE "customers" CASCADE;--> statement-breakpoint
-DROP TABLE "inventory" CASCADE;--> statement-breakpoint
-DROP TABLE "menu_categories" CASCADE;--> statement-breakpoint
-DROP TABLE "menu_items" CASCADE;--> statement-breakpoint
-DROP TABLE "order_items" CASCADE;--> statement-breakpoint
-DROP TABLE "orders" CASCADE;--> statement-breakpoint
-DROP TABLE "otp" CASCADE;--> statement-breakpoint
-DROP TABLE "permissions" CASCADE;--> statement-breakpoint
-DROP TABLE "qr_codes" CASCADE;--> statement-breakpoint
-DROP TABLE "restaurant_settings" CASCADE;--> statement-breakpoint
-DROP TABLE "role_permissions" CASCADE;--> statement-breakpoint
-DROP TABLE "roles" CASCADE;--> statement-breakpoint
-DROP TABLE "tables" CASCADE;--> statement-breakpoint
-DROP TABLE "transactions" CASCADE;--> statement-breakpoint
-DROP TABLE "users" CASCADE;--> statement-breakpoint
+CREATE TABLE "user_roles" (
+	"id" varchar(36) PRIMARY KEY NOT NULL,
+	"user_id" varchar(36) NOT NULL,
+	"role_id" varchar(36) NOT NULL
+);
+--> statement-breakpoint
 ALTER TABLE "auth"."otp" ADD CONSTRAINT "otp_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "auth"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "auth"."role_permissions" ADD CONSTRAINT "role_permissions_role_id_roles_id_fk" FOREIGN KEY ("role_id") REFERENCES "auth"."roles"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "auth"."role_permissions" ADD CONSTRAINT "role_permissions_permission_id_permissions_id_fk" FOREIGN KEY ("permission_id") REFERENCES "auth"."permissions"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
