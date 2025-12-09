@@ -3,18 +3,18 @@ import { HttpException } from '@/core/exceptions/httpException';
 import { httpStatus } from '@/core/constants/httpStatus';
 import { errorCodes } from '@/core/constants/errorCodes';
 import { masterDb } from '@/core/database/masterConnection';
-import { tenants } from '@/core/database/schemas/master/tenants.schema';
+import { tenants } from '@/core/database/schemas/master/auth.schema';
 import { eq } from 'drizzle-orm';
 import { logger } from '@/core/utils/logger.util';
 
 /**
  * Tenant Resolver Middleware
- * 
+ *
  * Resolves tenant from:
  * 1. Subdomain (e.g., tenant1.example.com)
  * 2. x-tenant-id header
  * 3. JWT payload (from authenticated user)
- * 
+ *
  * Sets req.tenantId and req.tenant for downstream use
  */
 export const tenantResolver = async (req: Request, _res: Response, next: NextFunction) => {
@@ -56,9 +56,7 @@ export const tenantResolver = async (req: Request, _res: Response, next: NextFun
           tenantId: tenant.tenantId,
           name: tenant.name,
           subdomain: tenant.subdomain,
-          databaseName: tenant.databaseName,
-          databaseHost: tenant.databaseHost,
-          databasePort: tenant.databasePort,
+          databaseUrl: tenant.databaseUrl,
           status: tenant.status,
         };
         logger.debug(`Tenant resolved from subdomain: ${tenant.name} (${tenantId})`);
@@ -87,10 +85,9 @@ export const tenantResolver = async (req: Request, _res: Response, next: NextFun
           tenantId: tenant.tenantId,
           name: tenant.name,
           subdomain: tenant.subdomain,
-          databaseName: tenant.databaseName,
-          databaseHost: tenant.databaseHost,
-          databasePort: tenant.databasePort,
+          databaseUrl: tenant.databaseUrl,
           status: tenant.status,
+          settings: tenant.settings ?? undefined,
         };
         logger.debug(`Tenant resolved from ID: ${tenant.name} (${tenantId})`);
       } else {
@@ -140,4 +137,3 @@ export const tenantResolver = async (req: Request, _res: Response, next: NextFun
     );
   }
 };
-

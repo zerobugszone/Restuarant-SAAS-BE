@@ -1,5 +1,5 @@
 import { TenantModel } from '../models/tenant.model';
-import { tenants } from '@/core/database/schemas/master/tenants.schema';
+import { tenants } from '@/core/database/schemas/master/auth.schema';
 import { eq } from 'drizzle-orm';
 import { masterDb } from '@/core/database/masterConnection';
 import { randomUUID } from 'crypto';

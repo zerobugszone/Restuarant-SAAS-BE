@@ -1,13 +1,4 @@
-import {
-  pgSchema,
-  pgTable,
-  uuid,
-  varchar,
-  integer,
-  boolean,
-  timestamp,
-  numeric,
-} from 'drizzle-orm/pg-core';
+import { pgSchema, uuid, varchar, integer, boolean, timestamp, numeric } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 import { tenants } from './auth.schema';
 
