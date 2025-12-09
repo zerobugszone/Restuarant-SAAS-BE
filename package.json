@@ -19,7 +19,7 @@
     "test:e2e": "jest --config jest.e2e.config.js",
     "test:coverage": "jest --coverage",
     "generate:master": "DRIZZLE_CONFIG_PATH=drizzle.config.ts drizzle-kit generate",
-    "generate:tenant": "DRIZZLE_CONFIG_PATH=drizzle.tenant.config.ts drizzle-kit generate",
+    "generate:tenant": "drizzle-kit generate --config=drizzle.tenant.config.ts",
     "migrate:master": "ts-node -r tsconfig-paths/register scripts/migrate-master.ts",
     "migrate:tenant": "ts-node -r tsconfig-paths/register scripts/migrate-tenant.ts",
     "migrate:all-tenants": "ts-node -r tsconfig-paths/register scripts/migrate-all-tenants.ts",

@@ -22,7 +22,7 @@ export const users = authSchema.table('users', {
  * Roles Table
  */
 export const roles = authSchema.table('roles', {
-  id: varchar('id', { length: 36 }).primaryKey(),
+  id: uuid('id').defaultRandom().primaryKey(),
   name: varchar('name', { length: 50 }).notNull(),
   description: text('description'),
 });
@@ -31,7 +31,7 @@ export const roles = authSchema.table('roles', {
  * Permissions Table
  */
 export const permissions = authSchema.table('permissions', {
-  id: varchar('id', { length: 36 }).primaryKey(),
+  id: uuid('id').defaultRandom().primaryKey(),
   name: varchar('name', { length: 50 }).notNull(),
   description: text('description'),
 });
@@ -40,11 +40,11 @@ export const permissions = authSchema.table('permissions', {
  * User Roles Table (Many-to-Many)
  */
 export const userRoles = authSchema.table('user_roles', {
-  id: varchar('id', { length: 36 }).primaryKey(),
-  userId: varchar('user_id', { length: 36 })
+  id: uuid('id').defaultRandom().primaryKey(),
+  userId: uuid('user_id')
     .notNull()
     .references(() => users.id, { onDelete: 'cascade' }),
-  roleId: varchar('role_id', { length: 36 })
+  roleId: uuid('role_id')
     .notNull()
     .references(() => roles.id, { onDelete: 'cascade' }),
 });
@@ -53,11 +53,11 @@ export const userRoles = authSchema.table('user_roles', {
  * Role Permissions Table (Many-to-Many)
  */
 export const rolePermissions = authSchema.table('role_permissions', {
-  id: varchar('id', { length: 36 }).primaryKey(),
-  roleId: varchar('role_id', { length: 36 })
+  id: uuid('id').defaultRandom().primaryKey(),
+  roleId: uuid('role_id')
     .notNull()
     .references(() => roles.id, { onDelete: 'cascade' }),
-  permissionId: varchar('permission_id', { length: 36 })
+  permissionId: uuid('permission_id')
     .notNull()
     .references(() => permissions.id, { onDelete: 'cascade' }),
 });
@@ -66,7 +66,7 @@ export const rolePermissions = authSchema.table('role_permissions', {
  * OTP Table
  */
 export const otp = authSchema.table('otp', {
-  id: varchar('id', { length: 36 }).primaryKey(),
+  id: uuid('id').defaultRandom().primaryKey(),
   userId: uuid('user_id')
     .notNull()
     .references(() => users.id, { onDelete: 'cascade' }),
