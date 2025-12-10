@@ -1,5 +1,5 @@
 import { tenantConnectionPool } from '@/core/database/tenantConnectionPool';
-import { roles, permissions } from '@/core/database/schemas/tenant/auth.schema';
+import { roles, permissions, rolePermissions } from '@/core/database/schemas/tenant/auth.schema';
 import { logger } from '@/core/utils/logger.util';
 
 /**
@@ -208,17 +208,12 @@ export class RoleSeedingService {
         logger.debug(`✓ Created role: ${role.name}`);
 
         // Step 3: Assign permissions to roles
-        const rolePermissions = ROLE_PERMISSION_MAPPING[role.name] || [];
-        for (const permissionKey of rolePermissions) {
+        const rolePermsToAssign = ROLE_PERMISSION_MAPPING[role.name] || [];
+        for (const permissionKey of rolePermsToAssign) {
           const permissionId = permissionMap[permissionKey];
           if (permissionId) {
-            // Import rolePermissions table to assign permissions
-            const { rolePermissions: rolePermissionsTable } = await import(
-              '@/core/database/schemas/tenant/auth.schema'
-            );
-
             await db
-              .insert(rolePermissionsTable)
+              .insert(rolePermissions)
               .values({
                 roleId: createdRole.id,
                 permissionId: permissionId,

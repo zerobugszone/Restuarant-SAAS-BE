@@ -24,9 +24,40 @@ class UserController {
     }
   }
 
+  public async login(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { email, password } = req.body;
+      const tenantId = req.tenantId!;
+      const subdomain = req.tenant?.subdomain;
+
+      if (!email || !password) {
+        throw new HttpException(
+          httpStatus.BAD_REQUEST,
+          'Email and password are required',
+          errorCodes.VALIDATION_ERROR
+        );
+      }
+
+      let result;
+
+      // Use subdomain from tenant resolver for efficient login
+      if (subdomain) {
+        result = await userServices.loginUserBySubdomain(subdomain, email, password);
+      } else {
+        // Fallback: use tenantId from resolver
+        result = await userServices.loginUser(tenantId, email, password);
+      }
+
+      sendResponse(res, { success: true, message: 'Login successful', data: result }, 200);
+    } catch (error: any) {
+      next(error);
+    }
+  }
+
   public async createSuperAdmin(req: Request, res: Response, next: NextFunction) {
     try {
-      const tenantId = req.tenantId;
+      const { tenantId, email, password } = req.body;
+
       if (!tenantId) {
         throw new HttpException(
           httpStatus.BAD_REQUEST,
@@ -34,8 +65,6 @@ class UserController {
           errorCodes.VALIDATION_ERROR
         );
       }
-
-      const { email, password } = req.body;
 
       if (!email || !password) {
         throw new HttpException(

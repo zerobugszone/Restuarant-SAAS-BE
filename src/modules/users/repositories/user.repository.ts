@@ -2,6 +2,8 @@ import { tenantConnectionPool } from '@/core/database/tenantConnectionPool';
 import { users, userRoles } from '@/core/database/schemas/tenant/auth.schema';
 import { User } from '../models/user.model';
 import { eq } from 'drizzle-orm';
+import { masterDb } from '@/core/database/masterConnection';
+import { tenants } from '@/core/database/schemas/master/auth.schema';
 
 class UserRepository {
   async create(data: User) {
@@ -50,6 +52,67 @@ class UserRepository {
     });
 
     return newUser;
+  }
+
+  /**
+   * Find a user by email across all tenants
+   * Returns user with tenantId and email matched
+   */
+  async findUserByEmailAcrossAllTenants(email: string) {
+    try {
+      // Get all active tenants from master database
+      const allTenants = await masterDb.select().from(tenants).where(eq(tenants.status, 'active'));
+
+      // Search for user in each tenant's database
+      for (const tenant of allTenants) {
+        const tenantDb = await tenantConnectionPool.getConnection(tenant.id);
+        const result = await tenantDb.select().from(users).where(eq(users.email, email)).limit(1);
+
+        if (result.length > 0) {
+          return {
+            ...result[0],
+            tenantId: tenant.id,
+          };
+        }
+      }
+
+      return null;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   * Find a user by email in a specific tenant by subdomain
+   */
+  async findUserByEmailAndSubdomain(email: string, subdomain: string) {
+    try {
+      // Get tenant by subdomain from master database
+      const [tenant] = await masterDb
+        .select()
+        .from(tenants)
+        .where(eq(tenants.subdomain, subdomain))
+        .limit(1);
+
+      if (!tenant) {
+        return null;
+      }
+
+      // Get user from tenant's database
+      const tenantDb = await tenantConnectionPool.getConnection(tenant.id);
+      const result = await tenantDb.select().from(users).where(eq(users.email, email)).limit(1);
+
+      if (result.length > 0) {
+        return {
+          ...result[0],
+          tenantId: tenant.id,
+        };
+      }
+
+      return null;
+    } catch (error) {
+      throw error;
+    }
   }
 }
 

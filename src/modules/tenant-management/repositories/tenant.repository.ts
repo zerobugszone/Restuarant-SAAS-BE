@@ -58,7 +58,7 @@ class TenantRepository {
       // Extract database name from URL
       const databaseName = dbName;
 
-      // Step 2: Create tenant DB + migrations
+      // Step 2: Create tenant DB + migrations + seeding
       await this.createAndMigrateTenantDatabase(databaseName, tenantId);
 
       logger.info(`✓ Tenant created successfully`);
@@ -66,14 +66,35 @@ class TenantRepository {
     } catch (error) {
       logger.error(`Failed to create tenant:`, error);
 
-      // Rollback tenant record on failure
+      // Rollback: Delete tenant record from master DB
       try {
         await masterDb.delete(tenants).where(eq(tenants.tenantId, tenantId));
+        logger.info(`✓ Rolled back tenant record from master DB`);
       } catch (rollbackError) {
-        logger.error(`Rollback failed:`, rollbackError);
+        logger.error(`Failed to rollback tenant record:`, rollbackError);
       }
 
-      throw new Error(`Failed to create tenant: ${error}`);
+      // Rollback: Attempt to drop tenant database
+      try {
+        const databaseName = dbName;
+        const adminDb = await this.getAdminConnection();
+
+        // Terminate all connections to the database
+        await adminDb.execute(
+          `SELECT pg_terminate_backend(pg_stat_activity.pid)
+           FROM pg_stat_activity
+           WHERE pg_stat_activity.datname = $1 AND pid <> pg_backend_pid();`,
+          [databaseName]
+        );
+
+        // Drop the database
+        await adminDb.execute(`DROP DATABASE IF EXISTS "${databaseName}";`);
+        logger.info(`✓ Rolled back tenant database: ${databaseName}`);
+      } catch (dbRollbackError) {
+        logger.error(`Failed to rollback tenant database:`, dbRollbackError);
+      }
+
+      throw error;
     }
   }
 
@@ -134,6 +155,34 @@ class TenantRepository {
   /** Hard delete tenant */
   async hardDelete(id: string): Promise<void> {
     await masterDb.delete(tenants).where(eq(tenants.id, id));
+  }
+
+  /**
+   * Get admin database connection for system operations
+   */
+  private async getAdminConnection() {
+    const host = process.env.MASTER_DB_HOST || 'localhost';
+    const port = parseInt(process.env.MASTER_DB_PORT || '5432');
+    const user = process.env.MASTER_DB_USER || 'postgres';
+    const password = process.env.MASTER_DB_PASSWORD || 'postgres';
+
+    // Connect to postgres database (system database) as admin
+    const { Pool } = await import('pg');
+    const pool = new Pool({
+      host,
+      port,
+      user,
+      password,
+      database: 'postgres',
+    });
+
+    return {
+      execute: async (sql: string, params?: any[]) => {
+        const result = await pool.query(sql, params);
+        await pool.end();
+        return result;
+      },
+    };
   }
 
   /**
