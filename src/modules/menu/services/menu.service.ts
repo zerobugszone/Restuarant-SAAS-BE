@@ -14,7 +14,13 @@ export class MenuService {
   ) {}
 
   createMenuItem(tenantId: string, payload: CreateMenuItemDto) {
-    return this.items.create(tenantId, { tenantId, ...payload });
+    return this.items.create(tenantId, {
+      ...payload,
+      categoryId: payload.categoryId ?? '',
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
   }
 
   listMenuItems(tenantId: string) {
@@ -26,7 +32,13 @@ export class MenuService {
   }
 
   createCategory(tenantId: string, payload: { name: string; description?: string }) {
-    return this.categoriesRepo.create(tenantId, { tenantId, ...payload });
+    return this.categoriesRepo.create(tenantId, {
+      ...payload,
+      menuId: '', // Set this to the correct menuId if available
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
   }
 
   listCategories(tenantId: string) {

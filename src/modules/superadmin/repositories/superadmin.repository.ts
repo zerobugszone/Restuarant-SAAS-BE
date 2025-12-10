@@ -1,4 +1,4 @@
-import { superadmins } from '@/core/database/schemas/master/superadmin.schema';
+import { superadmins } from '@/core/database/schemas/master/auth.schema';
 import { masterDb } from '@/core/database/masterConnection';
 import { eq } from 'drizzle-orm';
 import { paginatedData } from '@/core/helper/pagination_helper';

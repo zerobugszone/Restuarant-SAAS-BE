@@ -14,7 +14,7 @@ const collection = <T>(map: Map<string, T[]>, tenantId: string) => {
 
 export class CategoryRepository {
   async create(tenantId: string, payload: Omit<CategoryModel, 'id'>) {
-    const category: CategoryModel = { ...payload, id: uuid(), tenantId };
+    const category: CategoryModel = { ...payload, id: uuid() };
     collection(categories, tenantId).push(category);
     return category;
   }
@@ -38,7 +38,7 @@ export class CategoryRepository {
 
 export class MenuRepository {
   async create(tenantId: string, payload: Omit<MenuItemModel, 'id'>) {
-    const item: MenuItemModel = { ...payload, id: uuid(), tenantId };
+    const item: MenuItemModel = { ...payload, id: uuid() };
     collection(menuItems, tenantId).push(item);
     return item;
   }

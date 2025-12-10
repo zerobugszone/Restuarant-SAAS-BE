@@ -1,4 +1,4 @@
-import { otpSchema } from '@/core/database/schemas/tenant/otp.schema';
+import { otp } from '@/core/database/schemas/tenant/auth.schema';
 import { tenantConnectionPool } from '@/core/database/tenantConnectionPool';
 import { eq } from 'drizzle-orm';
 import { OTP } from '../models/otp.model';
@@ -6,16 +6,11 @@ import { OTP } from '../models/otp.model';
 export const OTPRepository = {
   async create(tenantId: string, data: OTP) {
     const db = await tenantConnectionPool.getConnection(tenantId);
-    return db.insert(otpSchema).values(data).returning();
+    return db.insert(otp).values(data).returning();
   },
   async findByUserId(tenantId: string, userId: string) {
     const db = await tenantConnectionPool.getConnection(tenantId);
-    return db
-      .select()
-      .from(otpSchema)
-      .where(eq(otpSchema.userId, userId))
-      .orderBy(otpSchema.expiresAt)
-      .limit(1);
+    return db.select().from(otp).where(eq(otp.userId, userId)).orderBy(otp.expiresAt).limit(1);
   },
   async findValid(tenantId: string, userId: string, code: string) {
     const db = await tenantConnectionPool.getConnection(tenantId);
@@ -23,13 +18,13 @@ export const OTPRepository = {
     const { and } = await import('drizzle-orm');
     return db
       .select()
-      .from(otpSchema)
-      .where(and(eq(otpSchema.userId, userId), eq(otpSchema.code, code), eq(otpSchema.used, false)))
-      .orderBy(otpSchema.expiresAt)
+      .from(otp)
+      .where(and(eq(otp.userId, userId), eq(otp.code, code), eq(otp.used, false)))
+      .orderBy(otp.expiresAt)
       .limit(1);
   },
   async markUsed(tenantId: string, id: string) {
     const db = await tenantConnectionPool.getConnection(tenantId);
-    return db.update(otpSchema).set({ used: true }).where(eq(otpSchema.id, id)).returning();
+    return db.update(otp).set({ used: true }).where(eq(otp.id, id)).returning();
   },
 };

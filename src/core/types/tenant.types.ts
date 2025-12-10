@@ -1,16 +1,13 @@
-export interface TenantDatabaseConfig {
-  host: string;
-  port: number;
-  database: string;
-  user: string;
-  password: string;
-}
-
 export interface Tenant {
   id: string;
+  tenantId: string;
   name: string;
   subdomain: string;
-  status: 'active' | 'inactive' | 'suspended';
-  database: TenantDatabaseConfig;
-  settings?: Record<string, unknown>;
+  databaseUrl: string;
+  status: string;
+  settings?: Record<string, unknown> | null;
+}
+
+export interface TenantDatabaseConfig {
+  databaseUrl: string;
 }

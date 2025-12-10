@@ -1,2 +1,3 @@
-export * from './tenants.schema';
+export * from './auth.schema';
 export * from './subscriptions.schema';
+export * from './global_settings.schema';
