@@ -7,8 +7,13 @@ class TenantService {
     return await tenantRepository.create(payload);
   }
 
-  async getAllTenants() {
-    return await tenantRepository.getAllTenants();
+  async getAllTenants(
+    matchData: Record<string, any>,
+    sortData: Record<string, 'asc' | 'desc'>,
+    page: number,
+    perPage: number
+  ) {
+    return await tenantRepository.getAllTenants(matchData, sortData, page, perPage);
   }
 }
 

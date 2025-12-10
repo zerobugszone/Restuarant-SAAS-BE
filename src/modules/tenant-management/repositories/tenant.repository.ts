@@ -5,6 +5,7 @@ import { masterDb } from '@/core/database/masterConnection';
 import { randomUUID } from 'crypto';
 import { migrationManager } from '@/core/database/migrationManager';
 import { logger } from '@/core/utils/logger.util';
+import { paginatedData } from '@/core/helper/pagination_helper';
 
 /**
  * Tenant Repository
@@ -75,39 +76,14 @@ class TenantRepository {
     }
   }
 
-  /**
-   * Create tenant DB and run migrations
-   */
-  private async createAndMigrateTenantDatabase(
-    databaseName: string,
-    tenantId: string
-  ): Promise<void> {
-    if (!databaseName) {
-      throw new Error('Database name is required.');
-    }
-
-    logger.info(`Creating & migrating tenant DB: ${databaseName}`);
-
-    try {
-      const result = await migrationManager.migrateTenant(tenantId, databaseName);
-
-      if (!result.success) {
-        throw new Error(`Migration failed: ${result.error}`);
-      }
-
-      logger.info(
-        `✓ Tenant DB created & migrated: ${databaseName}. Duration: ${result.duration}ms`
-      );
-    } catch (error) {
-      logger.error(`Tenant DB migration failed:`, error);
-      throw error;
-    }
-  }
-
   /** Get all tenants */
-  async getAllTenants(): Promise<TenantModel[]> {
-    const result = await masterDb.select().from(tenants);
-    return result as TenantModel[];
+  async getAllTenants(
+    matchData: Record<string, any>,
+    sortData: Record<string, 'asc' | 'desc'>,
+    page: number,
+    perPage: number
+  ) {
+    return await paginatedData(masterDb, tenants, matchData, sortData, page, perPage);
   }
 
   /** Get tenant by record ID */
@@ -157,6 +133,35 @@ class TenantRepository {
   /** Hard delete tenant */
   async hardDelete(id: string): Promise<void> {
     await masterDb.delete(tenants).where(eq(tenants.id, id));
+  }
+
+  /**
+   * Create tenant DB and run migrations
+   */
+  private async createAndMigrateTenantDatabase(
+    databaseName: string,
+    tenantId: string
+  ): Promise<void> {
+    if (!databaseName) {
+      throw new Error('Database name is required.');
+    }
+
+    logger.info(`Creating & migrating tenant DB: ${databaseName}`);
+
+    try {
+      const result = await migrationManager.migrateTenant(tenantId, databaseName);
+
+      if (!result.success) {
+        throw new Error(`Migration failed: ${result.error}`);
+      }
+
+      logger.info(
+        `✓ Tenant DB created & migrated: ${databaseName}. Duration: ${result.duration}ms`
+      );
+    } catch (error) {
+      logger.error(`Tenant DB migration failed:`, error);
+      throw error;
+    }
   }
 }
 

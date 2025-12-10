@@ -1,14 +1,19 @@
 import { Router } from 'express';
+import { checkSchema } from 'express-validator';
 import tenantController from '../controllers/tenant.controller';
 import { authenticationMiddleware } from '@/core/middleware/authentication.middleware';
 import { authorize } from '@/core/middleware/authorization.middleware';
-import { validationMiddleware } from '@/core/middleware/validation.middleware';
-import { CreateTenantDto } from '../dto/createTenant.dto';
-import { UpdateTenantDto } from '../dto/updateTenant.dto';
+import { validateSchema, createPaginationSchema } from '@/core/helper/validation_helper';
+import { createTenantSchema } from '../validators/tenant.validator';
 
 const router = Router();
 
-router.get('/', tenantController.getAllTenants);
+router.get(
+  '/',
+  authenticationMiddleware,
+  validateSchema(checkSchema(createPaginationSchema)),
+  tenantController.getAllTenants
+);
 
 /**
  * @openapi
@@ -28,7 +33,13 @@ router.get('/', tenantController.getAllTenants);
  *       201:
  *         description: Tenant created
  */
-router.post('/', authenticationMiddleware, authorize(['admin']), tenantController.create);
+router.post(
+  '/',
+  authenticationMiddleware,
+  authorize(['admin']),
+  validateSchema(createTenantSchema),
+  tenantController.create
+);
 
 /**
  * @openapi
