@@ -6,6 +6,7 @@ import { randomUUID } from 'crypto';
 import { migrationManager } from '@/core/database/migrationManager';
 import { logger } from '@/core/utils/logger.util';
 import { paginatedData } from '@/core/helper/pagination_helper';
+import { roleSeedingService } from '@/modules/roles/services/roleSeeding.service';
 
 /**
  * Tenant Repository
@@ -158,6 +159,11 @@ class TenantRepository {
       logger.info(
         `✓ Tenant DB created & migrated: ${databaseName}. Duration: ${result.duration}ms`
       );
+
+      // Seed default roles and permissions
+      logger.info(`Seeding default roles and permissions...`);
+      await roleSeedingService.seedRolesAndPermissions(tenantId);
+      logger.info(`✓ Default roles and permissions seeded successfully`);
     } catch (error) {
       logger.error(`Tenant DB migration failed:`, error);
       throw error;

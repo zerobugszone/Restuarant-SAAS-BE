@@ -1,6 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import userServices from '../services/user.service';
 import { sendResponse } from '@/core/utils/response.util';
+import { HttpException } from '@/core/exceptions/httpException';
+import { httpStatus } from '@/core/constants/httpStatus';
+import { errorCodes } from '@/core/constants/errorCodes';
 
 class UserController {
   public async registerUser(req: Request, res: Response, next: NextFunction) {
@@ -14,6 +17,38 @@ class UserController {
       sendResponse(
         res,
         { success: true, message: 'User registration successful', data: user },
+        201
+      );
+    } catch (error: any) {
+      next(error);
+    }
+  }
+
+  public async createSuperAdmin(req: Request, res: Response, next: NextFunction) {
+    try {
+      const tenantId = req.tenantId;
+      if (!tenantId) {
+        throw new HttpException(
+          httpStatus.BAD_REQUEST,
+          'Tenant ID is required',
+          errorCodes.VALIDATION_ERROR
+        );
+      }
+
+      const { email, password } = req.body;
+
+      if (!email || !password) {
+        throw new HttpException(
+          httpStatus.BAD_REQUEST,
+          'Email and password are required',
+          errorCodes.VALIDATION_ERROR
+        );
+      }
+
+      const user = await userServices.createSuperAdminUser(tenantId, email, password);
+      sendResponse(
+        res,
+        { success: true, message: 'Superadmin user created successfully', data: user },
         201
       );
     } catch (error: any) {

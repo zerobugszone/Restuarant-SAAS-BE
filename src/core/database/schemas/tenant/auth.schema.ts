@@ -23,8 +23,13 @@ export const users = authSchema.table('users', {
  */
 export const roles = authSchema.table('roles', {
   id: uuid('id').defaultRandom().primaryKey(),
-  name: varchar('name', { length: 50 }).notNull(),
+  tenantId: uuid('tenant_id').notNull(),
+  name: varchar('name', { length: 100 }).notNull(),
   description: text('description'),
+  isSystem: boolean('is_system').notNull().default(false), // true for default seeded roles
+  isActive: boolean('is_active').notNull().default(true),
+  createdAt: timestamp('created_at', { mode: 'date' }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { mode: 'date' }).notNull().defaultNow(),
 });
 
 /**
@@ -32,8 +37,14 @@ export const roles = authSchema.table('roles', {
  */
 export const permissions = authSchema.table('permissions', {
   id: uuid('id').defaultRandom().primaryKey(),
-  name: varchar('name', { length: 50 }).notNull(),
+  tenantId: uuid('tenant_id').notNull(),
+  name: varchar('name', { length: 100 }).notNull(),
   description: text('description'),
+  resource: varchar('resource', { length: 100 }).notNull(), // e.g., 'orders', 'menus', 'users'
+  action: varchar('action', { length: 50 }).notNull(), // e.g., 'create', 'read', 'update', 'delete'
+  isActive: boolean('is_active').notNull().default(true),
+  createdAt: timestamp('created_at', { mode: 'date' }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { mode: 'date' }).notNull().defaultNow(),
 });
 
 /**

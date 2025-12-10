@@ -1,18 +1,29 @@
 import { Router } from 'express';
-import {
-  assignPermission,
-  getRolePermissions,
-  removePermission,
-} from '../controllers/rolePermissions.controller';
+import { rolePermissionsController } from '../controllers/rolePermissions.controller';
+import { authenticationMiddleware } from '@/core/middleware/authentication.middleware';
+import { authorizeByRole } from '@/core/middleware/authorization.middleware';
 
-const router = Router();
+const router = Router({ mergeParams: true });
 
 /**
  * @openapi
- * /api/v1/role-permissions/assign:
+ * /api/v1/tenants/{tenantId}/roles/{roleId}/permissions:
  *   post:
  *     tags: [RolePermissions]
- *     summary: Assign a permission to a role
+ *     summary: Assign permissions to a role
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: tenantId
+ *         schema:
+ *           type: string
+ *         required: true
+ *       - in: path
+ *         name: roleId
+ *         schema:
+ *           type: string
+ *         required: true
  *     requestBody:
  *       required: true
  *       content:
@@ -20,72 +31,60 @@ const router = Router();
  *           schema:
  *             type: object
  *             required:
- *               - tenantId
- *               - roleId
- *               - permissionId
+ *               - permissionIds
  *             properties:
- *               tenantId:
- *                 type: string
- *               roleId:
- *                 type: string
- *               permissionId:
- *                 type: string
+ *               permissionIds:
+ *                 type: array
+ *                 items:
+ *                   type: string
  *     responses:
- *       201:
- *         description: Permission assigned to role
+ *       200:
+ *         description: Permissions assigned to role successfully
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: Role not found
  */
-router.post('/assign', assignPermission);
+router.post(
+  '/',
+  authenticationMiddleware,
+  authorizeByRole(['admin']),
+  rolePermissionsController.assignPermissions.bind(rolePermissionsController)
+);
 
 /**
  * @openapi
- * /api/v1/role-permissions/{roleId}:
+ * /api/v1/tenants/{tenantId}/roles/{roleId}/permissions:
  *   get:
  *     tags: [RolePermissions]
- *     summary: Get permissions for a role
+ *     summary: Get all permissions for a role
+ *     security:
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
- *         name: roleId
+ *         name: tenantId
  *         schema:
  *           type: string
  *         required: true
- *       - in: query
- *         name: tenantId
+ *       - in: path
+ *         name: roleId
  *         schema:
  *           type: string
  *         required: true
  *     responses:
  *       200:
  *         description: List of permissions for the role
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Role not found
  */
-router.get('/:roleId', getRolePermissions);
-
-/**
- * @openapi
- * /api/v1/role-permissions/remove:
- *   delete:
- *     tags: [RolePermissions]
- *     summary: Remove a permission from a role
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - tenantId
- *               - roleId
- *               - permissionId
- *             properties:
- *               tenantId:
- *                 type: string
- *               roleId:
- *                 type: string
- *               permissionId:
- *                 type: string
- *     responses:
- *       204:
- *         description: Permission removed from role
- */
-router.delete('/remove', removePermission);
+router.get(
+  '/',
+  authenticationMiddleware,
+  rolePermissionsController.getRolePermissions.bind(rolePermissionsController)
+);
 
 export default router;

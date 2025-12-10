@@ -983,12 +983,27 @@
         }
       }
     },
-    "/api/v1/permissions": {
+    "/api/v1/tenants/{tenantId}/permissions": {
       "post": {
         "tags": [
           "Permissions"
         ],
         "summary": "Create a new permission",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "tenantId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -996,18 +1011,24 @@
               "schema": {
                 "type": "object",
                 "required": [
-                  "tenantId",
-                  "name"
+                  "name",
+                  "resource",
+                  "action"
                 ],
                 "properties": {
-                  "tenantId": {
-                    "type": "string"
-                  },
                   "name": {
                     "type": "string"
                   },
                   "description": {
                     "type": "string"
+                  },
+                  "resource": {
+                    "type": "string",
+                    "description": "Resource name (e.g., 'orders', 'menus')"
+                  },
+                  "action": {
+                    "type": "string",
+                    "description": "Action type (e.g., 'create', 'read', 'update', 'delete')"
                   }
                 }
               }
@@ -1016,7 +1037,13 @@
         },
         "responses": {
           "201": {
-            "description": "Permission created"
+            "description": "Permission created successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         }
       },
@@ -1024,11 +1051,87 @@
         "tags": [
           "Permissions"
         ],
-        "summary": "Get all permissions",
+        "summary": "Get all permissions with pagination",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "parameters": [
           {
-            "in": "query",
+            "in": "path",
             "name": "tenantId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "number",
+              "default": 1
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "number",
+              "default": 10
+            }
+          },
+          {
+            "in": "query",
+            "name": "resource",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by resource"
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Search by permission name"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of permissions with pagination"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/v1/tenants/{tenantId}/permissions/{permissionId}": {
+      "get": {
+        "tags": [
+          "Permissions"
+        ],
+        "summary": "Get a specific permission",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "tenantId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "permissionId",
             "schema": {
               "type": "string"
             },
@@ -1037,21 +1140,38 @@
         ],
         "responses": {
           "200": {
-            "description": "List of permissions"
+            "description": "Permission details"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Permission not found"
           }
         }
-      }
-    },
-    "/api/v1/permissions/{id}": {
+      },
       "put": {
         "tags": [
           "Permissions"
         ],
         "summary": "Update a permission",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "in": "path",
-            "name": "id",
+            "name": "tenantId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "permissionId",
             "schema": {
               "type": "string"
             },
@@ -1064,18 +1184,15 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": [
-                  "tenantId"
-                ],
                 "properties": {
-                  "tenantId": {
-                    "type": "string"
-                  },
                   "name": {
                     "type": "string"
                   },
                   "description": {
                     "type": "string"
+                  },
+                  "isActive": {
+                    "type": "boolean"
                   }
                 }
               }
@@ -1084,7 +1201,16 @@
         },
         "responses": {
           "200": {
-            "description": "Permission updated"
+            "description": "Permission updated successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Permission not found"
           }
         }
       },
@@ -1093,37 +1219,83 @@
           "Permissions"
         ],
         "summary": "Delete a permission",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "in": "path",
-            "name": "id",
+            "name": "tenantId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "permissionId",
             "schema": {
               "type": "string"
             },
             "required": true
           }
         ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": [
-                  "tenantId"
-                ],
-                "properties": {
-                  "tenantId": {
-                    "type": "string"
-                  }
-                }
-              }
-            }
-          }
-        },
         "responses": {
-          "204": {
-            "description": "Permission deleted"
+          "200": {
+            "description": "Permission deleted successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Permission not found"
+          },
+          "409": {
+            "description": "Conflict - Permission assigned to roles"
+          }
+        }
+      }
+    },
+    "/api/v1/tenants/{tenantId}/permissions/resources/{resource}": {
+      "get": {
+        "tags": [
+          "Permissions"
+        ],
+        "summary": "Get all permissions for a specific resource",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "tenantId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "resource",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Resource name (e.g., 'orders', 'menus')"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of permissions for the resource"
+          },
+          "401": {
+            "description": "Unauthorized"
           }
         }
       }
@@ -1308,52 +1480,26 @@
         }
       }
     },
-    "/api/v1/role-permissions/assign": {
+    "/api/v1/tenants/{tenantId}/roles/{roleId}/permissions": {
       "post": {
         "tags": [
-          "RolePermissions"
+          "Roles"
         ],
-        "summary": "Assign a permission to a role",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": [
-                  "tenantId",
-                  "roleId",
-                  "permissionId"
-                ],
-                "properties": {
-                  "tenantId": {
-                    "type": "string"
-                  },
-                  "roleId": {
-                    "type": "string"
-                  },
-                  "permissionId": {
-                    "type": "string"
-                  }
-                }
-              }
-            }
+        "summary": "Assign permissions to a role",
+        "security": [
+          {
+            "BearerAuth": []
           }
-        },
-        "responses": {
-          "201": {
-            "description": "Permission assigned to role"
-          }
-        }
-      }
-    },
-    "/api/v1/role-permissions/{roleId}": {
-      "get": {
-        "tags": [
-          "RolePermissions"
         ],
-        "summary": "Get permissions for a role",
         "parameters": [
+          {
+            "in": "path",
+            "name": "tenantId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
           {
             "in": "path",
             "name": "roleId",
@@ -1361,10 +1507,66 @@
               "type": "string"
             },
             "required": true
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "permissionIds"
+                ],
+                "properties": {
+                  "permissionIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Permissions assigned successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Role not found"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "RolePermissions"
+        ],
+        "summary": "Get all permissions for a role",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "tenantId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
           },
           {
-            "in": "query",
-            "name": "tenantId",
+            "in": "path",
+            "name": "roleId",
             "schema": {
               "type": "string"
             },
@@ -1374,55 +1576,37 @@
         "responses": {
           "200": {
             "description": "List of permissions for the role"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Role not found"
           }
         }
       }
     },
-    "/api/v1/role-permissions/remove": {
-      "delete": {
-        "tags": [
-          "RolePermissions"
-        ],
-        "summary": "Remove a permission from a role",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": [
-                  "tenantId",
-                  "roleId",
-                  "permissionId"
-                ],
-                "properties": {
-                  "tenantId": {
-                    "type": "string"
-                  },
-                  "roleId": {
-                    "type": "string"
-                  },
-                  "permissionId": {
-                    "type": "string"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "204": {
-            "description": "Permission removed from role"
-          }
-        }
-      }
-    },
-    "/api/v1/roles": {
+    "/api/v1/tenants/{tenantId}/roles": {
       "post": {
         "tags": [
           "Roles"
         ],
         "summary": "Create a new role",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "tenantId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -1430,18 +1614,16 @@
               "schema": {
                 "type": "object",
                 "required": [
-                  "tenantId",
                   "name"
                 ],
                 "properties": {
-                  "tenantId": {
-                    "type": "string"
-                  },
                   "name": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "Role name"
                   },
                   "description": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "Role description"
                   }
                 }
               }
@@ -1450,7 +1632,13 @@
         },
         "responses": {
           "201": {
-            "description": "Role created"
+            "description": "Role created successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         }
       },
@@ -1458,11 +1646,79 @@
         "tags": [
           "Roles"
         ],
-        "summary": "Get all roles",
+        "summary": "Get all roles with pagination",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "parameters": [
           {
-            "in": "query",
+            "in": "path",
             "name": "tenantId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "number",
+              "default": 1
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "number",
+              "default": 10
+            }
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Search by role name"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of roles with pagination"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/v1/tenants/{tenantId}/roles/{roleId}": {
+      "get": {
+        "tags": [
+          "Roles"
+        ],
+        "summary": "Get a specific role with permissions",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "tenantId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "roleId",
             "schema": {
               "type": "string"
             },
@@ -1471,21 +1727,38 @@
         ],
         "responses": {
           "200": {
-            "description": "List of roles"
+            "description": "Role details with permissions"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Role not found"
           }
         }
-      }
-    },
-    "/api/v1/roles/{id}": {
+      },
       "put": {
         "tags": [
           "Roles"
         ],
         "summary": "Update a role",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "in": "path",
-            "name": "id",
+            "name": "tenantId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "roleId",
             "schema": {
               "type": "string"
             },
@@ -1498,18 +1771,15 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": [
-                  "tenantId"
-                ],
                 "properties": {
-                  "tenantId": {
-                    "type": "string"
-                  },
                   "name": {
                     "type": "string"
                   },
                   "description": {
                     "type": "string"
+                  },
+                  "isActive": {
+                    "type": "boolean"
                   }
                 }
               }
@@ -1518,7 +1788,16 @@
         },
         "responses": {
           "200": {
-            "description": "Role updated"
+            "description": "Role updated successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Role not found"
           }
         }
       },
@@ -1527,37 +1806,44 @@
           "Roles"
         ],
         "summary": "Delete a role",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "in": "path",
-            "name": "id",
+            "name": "tenantId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "roleId",
             "schema": {
               "type": "string"
             },
             "required": true
           }
         ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": [
-                  "tenantId"
-                ],
-                "properties": {
-                  "tenantId": {
-                    "type": "string"
-                  }
-                }
-              }
-            }
-          }
-        },
         "responses": {
-          "204": {
-            "description": "Role deleted"
+          "200": {
+            "description": "Role deleted successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Role not found"
+          },
+          "409": {
+            "description": "Conflict - Role has assigned users"
           }
         }
       }
