@@ -29,7 +29,7 @@ export const createSuperadminSchema = [
     .custom(value => {
       const regex = emojiRegex();
       if (regex.test(value)) {
-        throw new Error('Title cannot contain emoji characters');
+        throw new Error('Email cannot contain emoji characters');
       }
       return true;
     })

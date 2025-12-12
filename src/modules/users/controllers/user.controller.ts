@@ -30,21 +30,11 @@ class UserController {
       const tenantId = req.tenantId!;
       const subdomain = req.tenant?.subdomain;
 
-      if (!email || !password) {
-        throw new HttpException(
-          httpStatus.BAD_REQUEST,
-          'Email and password are required',
-          errorCodes.VALIDATION_ERROR
-        );
-      }
-
       let result;
 
-      // Use subdomain from tenant resolver for efficient login
       if (subdomain) {
         result = await userServices.loginUserBySubdomain(subdomain, email, password);
       } else {
-        // Fallback: use tenantId from resolver
         result = await userServices.loginUser(tenantId, email, password);
       }
 
@@ -57,22 +47,6 @@ class UserController {
   public async createSuperAdmin(req: Request, res: Response, next: NextFunction) {
     try {
       const { tenantId, email, password } = req.body;
-
-      if (!tenantId) {
-        throw new HttpException(
-          httpStatus.BAD_REQUEST,
-          'Tenant ID is required',
-          errorCodes.VALIDATION_ERROR
-        );
-      }
-
-      if (!email || !password) {
-        throw new HttpException(
-          httpStatus.BAD_REQUEST,
-          'Email and password are required',
-          errorCodes.VALIDATION_ERROR
-        );
-      }
 
       const user = await userServices.createSuperAdminUser(tenantId, email, password);
       sendResponse(
