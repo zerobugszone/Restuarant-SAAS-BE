@@ -70,5 +70,4 @@ export async function runTenantMigrations(databaseName: string) {
   }
 }
 
-// Re-export migration manager for direct access
 export { migrationManager } from './migrationManager';
