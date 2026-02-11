@@ -4,8 +4,8 @@ import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '.
 class AuthServices {
   static async generateAuthToken(user: any) {
     const payload = { id: user._id, email: user.email, role: user.role };
-    const accessToken = await generateAccessToken(payload, '1d');
-    const refreshToken = await generateRefreshToken(payload, '7d');
+    const accessToken = generateAccessToken(payload, '1d');
+    const refreshToken = generateRefreshToken(payload, '7d');
     return {
       accessToken,
       refreshToken,
